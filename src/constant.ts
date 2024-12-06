@@ -1,0 +1,1 @@
+export const JWT_KEY = "sL40W5CcLx";

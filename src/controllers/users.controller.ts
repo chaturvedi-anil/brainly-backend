@@ -3,8 +3,7 @@ import { z } from "zod";
 import brcypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model";
-
-const JWT_KEY = "sL40W5CcLx";
+import { JWT_KEY } from "../constant";
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
     try {

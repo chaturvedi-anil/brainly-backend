@@ -1,6 +1,8 @@
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
+import { authMiddleware } from "./middleware/auth.middleware";
 import { signin, signup } from "./controllers/users.controller";
+import { createContent } from "./controllers/content.controllers";
 
 const app = express();
 
@@ -14,11 +16,9 @@ app.post("/api/v1/signup", signup);
 app.post("/api/v1/signin", signin);
 
 
-app.post("/api/v1/content", (res, req) => {
+app.post("/api/v1/content", authMiddleware ,createContent);
 
-});
-
-app.get("/api/v1/content", (res, req) => {
+app.get("/api/v1/content", authMiddleware , (res, req) => {
 
 });
 
