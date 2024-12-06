@@ -9,7 +9,7 @@ export const authMiddleware = async (req: Request, res: Response, next:NextFunct
         const isTokenRight = jwt.verify(token, JWT_KEY) as { id: string };
 
         if(isTokenRight){
-            req.body.id = isTokenRight.id
+            req.body.userId = isTokenRight.id
             next();
         }
     } catch (error: any) {
