@@ -1,19 +1,18 @@
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
+import { signin, signup } from "./controllers/users.controller";
 
 const app = express();
 
-app.get("/", (req: Request, res: Response) => {
-    res.json({ message: "Validation with Zod 👊" });
-});
-app.post("/api/v1/signup", (res, req) => {
+app.use(express.json());
 
+app.get("/ping", (req: Request, res: Response) => {
+    res.json({ message: "Server is running" });
 });
 
-app.post("/api/v1/signin", (res, req) => {
+app.post("/api/v1/signup", signup);
+app.post("/api/v1/signin", signin);
 
-});
 
 app.post("/api/v1/content", (res, req) => {
 
