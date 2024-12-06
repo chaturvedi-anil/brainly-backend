@@ -35,11 +35,16 @@ app.get("/api/v1/brain/:shareLink", (res, req) => {
 
 });
 
-const start = ():void => {
+const start = async ():Promise<void> => {
     try{
-        app.listen(3000, () => {
-            console.log(`server is running on port ${3000}`);
-        })
+        const db = await mongoose.connect("mongodb://localhost:27017/");
+        
+        if(db.connection){
+            console.log('Mongoose is connected to the database');
+            app.listen(3000, () => {
+                console.log(`server is running on port ${3000}`);
+            })
+        }
     } catch (error) {
         console.error(error)
     }
