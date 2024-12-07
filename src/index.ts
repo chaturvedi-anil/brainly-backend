@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { signin, signup } from "./controllers/users.controller";
-import { createContent, getContentList } from "./controllers/content.controllers";
+import { createContent, getContentList, deleteContent } from "./controllers/content.controllers";
 
 const app = express();
 
@@ -20,9 +20,7 @@ app.post("/api/v1/content", authMiddleware ,createContent);
 
 app.get("/api/v1/content", authMiddleware, getContentList);
 
-app.delete("/api/v1/content", (res, req) => {
-
-});
+app.delete("/api/v1/content/:contentId", authMiddleware ,deleteContent);
 
 app.post("/api/v1/brain/share", (res, req) => {
 

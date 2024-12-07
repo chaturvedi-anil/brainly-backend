@@ -14,7 +14,7 @@ export const authMiddleware = async (req: Request, res: Response, next:NextFunct
         }
     } catch (error: any) {
         res.status(401).json({
-            message: "Unautherized",
+            message: "Incorrect Credentials!",
             error: error.message
         })
         return;

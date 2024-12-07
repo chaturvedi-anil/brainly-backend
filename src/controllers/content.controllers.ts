@@ -67,3 +67,37 @@ export const getContentList = async (req: Request, res: Response): Promise<void>
         return;
     }
 } 
+
+export const deleteContent = async (req: Request, res:Response): Promise<void> => {
+    try {
+        const isContentPresent = await Content.findOne({_id: req.params.contentId});
+        if(isContentPresent) {
+            
+            if (isContentPresent.userId.toString() === req.body.userId) {
+                const deletedContent = await Content.deleteOne({_id: isContentPresent._id});
+
+                if(deletedContent.deletedCount > 0){
+                    res.status(200).json({
+                        message: "Content deleted successfully!"
+                    })
+                    return;
+                }
+            } else {
+                res.status(401).json({
+                    message: "You are not autherize for deleting this content"
+                })
+                return;
+            }
+        } else {
+            res.status(400).json({
+                message: `content not found with ${req.params.contentId} id!`
+            })
+            return;
+        }
+    } catch (error: any) {
+        res.status(500).json({
+            error: error.message
+        })
+        return;
+    }
+} 
