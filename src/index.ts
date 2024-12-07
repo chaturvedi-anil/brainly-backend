@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { signin, signup } from "./controllers/users.controller";
-import { createContent, getContentList, deleteContent } from "./controllers/content.controllers";
+import { createContent, getContentList, deleteContent, createShareLink, getContentByShareableLink } from "./controllers/content.controllers";
 
 const app = express();
 
@@ -15,20 +15,12 @@ app.get("/ping", (req: Request, res: Response) => {
 app.post("/api/v1/signup", signup);
 app.post("/api/v1/signin", signin);
 
-
 app.post("/api/v1/content", authMiddleware ,createContent);
-
 app.get("/api/v1/content", authMiddleware, getContentList);
-
 app.delete("/api/v1/content/:contentId", authMiddleware ,deleteContent);
 
-app.post("/api/v1/brain/share", (res, req) => {
-
-});
-
-app.get("/api/v1/brain/:shareLink", (res, req) => {
-
-});
+app.post("/api/v1/brain/share", authMiddleware, createShareLink);
+app.get("/api/v1/brain/:shareLink", getContentByShareableLink);
 
 const start = async ():Promise<void> => {
     try{
