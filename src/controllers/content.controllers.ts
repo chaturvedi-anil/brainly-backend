@@ -1,23 +1,42 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 import Content from "../models/content.model";
 
 export const createContent = async (req: Request, res: Response): Promise<void> => {
     try {
         // TODO zod validation for content
-        const {link, type, title, tags} = req.body;
+        const requiredBody = z.object({
+            link: z.string()
+                .url({message: "Invalid url"}), 
+            type: z.enum(["image", "video", "article", "audio"]),
+            
+            title: z.string()
+                .min(10, {message: "title must be at least 10 character long"})
+                .max(100, {message: "title can not be more than 100 character"}),
+        });
 
-        const newContent = await Content.create({
-            link: link,
-            title: title,
-            type: type,
-            userId: req.body.userId,
-        })
-
-        if(newContent){
-            res.status(201).json({
-                message: "content is created successfully!"
-            });
+        const parseResult = requiredBody.safeParse(req.body);
+        
+        if(!parseResult.success) {
+            res.status(400).json({
+                error: parseResult.error
+            })
             return;
+        } else {
+            const { link, title, type } = req.body;
+            const newContent = await Content.create({
+                link: link,
+                title: title,
+                type: type,
+                userId: req.body.userId,
+            })
+
+            if(newContent){
+                res.status(201).json({
+                    message: "content is created successfully!"
+                });
+                return;
+            }
         }
 
     } catch (error: any) {
@@ -30,7 +49,6 @@ export const createContent = async (req: Request, res: Response): Promise<void> 
 
 export const getContentList = async (req: Request, res: Response): Promise<void> => {
     try {
-        // TODO zod validation for content
         const {userId} = req.body;
 
         const contentList = await Content.find({userId: userId});
