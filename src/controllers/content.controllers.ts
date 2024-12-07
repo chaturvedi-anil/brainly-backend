@@ -51,7 +51,7 @@ export const getContentList = async (req: Request, res: Response): Promise<void>
     try {
         const {userId} = req.body;
 
-        const contentList = await Content.find({userId: userId});
+        const contentList = await Content.find({userId: userId}).populate("userId", "username");
 
         if(contentList){
             res.status(200).json({
