@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { signin, signup } from "./controllers/users.controller";
 import { createContent, getContentList, deleteContent, createShareLink, getContentByShareableLink } from "./controllers/content.controllers";
@@ -7,6 +8,9 @@ import { createContent, getContentList, deleteContent, createShareLink, getConte
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173"
+}))
 
 app.get("/ping", (req: Request, res: Response) => {
     res.json({ message: "Server is running" });
