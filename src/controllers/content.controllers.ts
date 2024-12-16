@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import Content from "../models/content.model";
 import Link from "../models/Link.model";
 import { random } from "../utils/utils";
 import User from "../models/user.model";
+import Content, { IContent } from '../models/content.model';  // Import the IContent type
+import Tag, {ITag} from "../models/tag.model";
 
 export const createContent = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -11,11 +12,13 @@ export const createContent = async (req: Request, res: Response): Promise<void> 
         const requiredBody = z.object({
             link: z.string()
                 .url({message: "Invalid url"}), 
-            type: z.enum(["image", "video", "article", "audio"]),
+            type: z.enum(["twitter", "youtube"]),
             
             title: z.string()
                 .min(10, {message: "title must be at least 10 character long"})
                 .max(100, {message: "title can not be more than 100 character"}),
+            tags: z.string()
+                .array()
         });
 
         const parseResult = requiredBody.safeParse(req.body);
@@ -26,11 +29,26 @@ export const createContent = async (req: Request, res: Response): Promise<void> 
             })
             return;
         } else {
-            const { link, title, type } = req.body;
+            const { link, title, type, tags } = parseResult.data;
+            
+            const tagIds = await Promise.all(
+                tags.map( async (tagName) => {
+                    const existingTag = await Tag.findOne({tagName: tagName});
+                    
+                    if(existingTag){
+                        return existingTag?._id;
+                    } else {
+                        const newTag = await Tag.create({tagName: tagName});
+                        return newTag?._id;
+                    }
+                })
+            )
+
             const newContent = await Content.create({
                 link: link,
                 title: title,
                 type: type,
+                tags: tagIds,
                 userId: req.body.userId,
             })
 
@@ -52,13 +70,21 @@ export const createContent = async (req: Request, res: Response): Promise<void> 
 
 export const getContentList = async (req: Request, res: Response): Promise<void> => {
     try {
-        const {userId} = req.body;
+        const { userId } = req.body;
 
-        const contentList = await Content.find({userId: userId}).populate("userId", "username");
+        const contentList = await Content.find({userId: userId})
+            .populate("userId", "username")
+            .populate("tags", "tagName");
+        
+        // Map the content list and return only the tagNames for tags
+        const modifiedContentList = contentList.map((content) => {
+            const tagList = content.tags.map((tag: ITag) => tag.tagName);  // Extract only tagName from tags
+            return { ...content.toObject(), tags: tagList };  // Convert content to plain object and update tags
+        });
 
         if(contentList){
             res.status(200).json({
-                data: contentList
+                data: modifiedContentList
             });
             return;
         }
