@@ -1,11 +1,11 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { ITag } from './tag.model';  // Import the ITag interface
+import { ITag } from './tag.model'; 
 
 interface IContent extends Document {
   title: string;
   link: string;
   type: string;
-  tags: ITag[];  // Use the ITag interface for the tags array
+  tags: ITag[];
   userId: mongoose.Types.ObjectId;
 }
 
@@ -15,6 +15,8 @@ const contentSchema = new Schema<IContent>({
   type: { type: String, required: true },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+}, {
+  timestamps: true
 });
 
 const Content = mongoose.model<IContent>('Content', contentSchema);

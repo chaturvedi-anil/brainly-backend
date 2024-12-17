@@ -3,7 +3,7 @@ import { z } from "zod";
 import Link from "../models/Link.model";
 import { random } from "../utils/utils";
 import User from "../models/user.model";
-import Content, { IContent } from '../models/content.model';  // Import the IContent type
+import Content, { IContent } from '../models/content.model';
 import Tag, {ITag} from "../models/tag.model";
 
 export const createContent = async (req: Request, res: Response): Promise<void> => {
@@ -44,7 +44,7 @@ export const createContent = async (req: Request, res: Response): Promise<void> 
                 })
             )
 
-            const newContent = await Content.create({
+            const newContent: IContent = await Content.create({
                 link: link,
                 title: title,
                 type: type,
@@ -75,11 +75,10 @@ export const getContentList = async (req: Request, res: Response): Promise<void>
         const contentList = await Content.find({userId: userId})
             .populate("userId", "username")
             .populate("tags", "tagName");
-        
-        // Map the content list and return only the tagNames for tags
+
         const modifiedContentList = contentList.map((content) => {
-            const tagList = content.tags.map((tag: ITag) => tag.tagName);  // Extract only tagName from tags
-            return { ...content.toObject(), tags: tagList };  // Convert content to plain object and update tags
+            const tagList = content.tags.map((tag: ITag) => tag.tagName);  
+            return { ...content.toObject(), tags: tagList };
         });
 
         if(contentList){
